@@ -2,28 +2,23 @@
 CC = g++
 CFLAGS = -g
 CXXFLAGS = -g
+LINK = -lboost_date_time -lboost_system -lboost_thread-mt
 
 BIN_DIR = bin
 SRC_DIR = src
-OBJS_DIR = objects
+OBJ_DIR = object
 
-PROGS = ${BIN_DIR}/hello.out  ${BIN_DIR}/pageget.out ${BIN_DIR}/localip.out
-#OBJS = ${OBJS_DIR}/
+PROGS = ${BIN_DIR}/boost_asio_server.out
+#OBJ = ${OBJ_DIR}/
 
 all : ${PROGS}
 
-${BIN_DIR}/hello.out : ${SRC_DIR}/hello.cpp
-	${CC} ${CXXFLAGS} ${SRC_DIR}/hello.cpp -o ${BIN_DIR}/hello.out
-
-${BIN_DIR}/pageget.out : ${SRC_DIR}/pageget.cpp
-	${CC} ${CXXFLAGS} ${SRC_DIR}/pageget.cpp -o ${BIN_DIR}/pageget.out
-
-${BIN_DIR}/localip.out : ${SRC_DIR}/localip.cpp
-	${CC} ${CXXFLAGS} ${SRC_DIR}/localip.cpp -o ${BIN_DIR}/localip.out
+${BIN_DIR}/boost_asio_server.out : ${SRC_DIR}/boost_asio_server.cpp
+	${CC} ${CXXFLAGS} ${LINK} ${SRC_DIR}/boost_asio_server.cpp -o ${BIN_DIR}/boost_asio_server.out
 
 .PHONY : all clean
 
 clean:
 	-rm -rf ${PROGS}
-#	-rm -rf	${OBJS_DIR}/*  ${PROGS}
+#	-rm -rf	${OBJ_DIR}/*  ${PROGS}
 
