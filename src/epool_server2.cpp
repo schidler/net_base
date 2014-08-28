@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
     epoll_ctl(epfd, EPOLL_CTL_ADD, listenfd, &ev);  //对listendfd   注册epoll事件
     bzero(&servaddr, sizeof(servaddr));
     servaddr.sin_family = AF_INET;
-    char *local_addr = "127.0.0.1";
+    char local_addr[]= "127.0.0.1";
     inet_aton(local_addr, &(servaddr.sin_addr)); //htons(port);
 
     servaddr.sin_port = htons(port);
