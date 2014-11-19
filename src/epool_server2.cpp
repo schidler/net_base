@@ -64,6 +64,7 @@ int main(int argc, char *argv[]) {
     servaddr.sin_family = AF_INET;
     char local_addr[]= "127.0.0.1";
     inet_aton(local_addr, &(servaddr.sin_addr)); //htons(port);
+    //errorCode = inet_pton(AF_INET, local_addr, (void*) &(servaddr.sin_addr));
 
     servaddr.sin_port = htons(port);
     bind(listenfd, (sockaddr *)&servaddr, sizeof(servaddr));
@@ -102,7 +103,7 @@ int main(int argc, char *argv[]) {
                     close(sockfd);
                     events[i].data.fd = -1;
                 }
-                line[n] = '/0';
+                line[n] = '\0';
                 cout << "read " << line << endl;
 
                 ev.data.fd = sockfd;//设置用于写操作的文件描述符
