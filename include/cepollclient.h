@@ -1,5 +1,6 @@
 ﻿#ifndef _DEFINE_EPOLLCLIENT_H_
 #define _DEFINE_EPOLLCLIENT_H_
+
 #define _MAX_SOCKFD_COUNT 65535
 
 #include<iostream>
@@ -11,6 +12,9 @@
 #include <errno.h>
 #include <sys/ioctl.h>
 #include <sys/time.h>
+#include <cstring>
+#include <cstdio>
+#include <cstdlib>
 #include <string>
 
 using namespace std;
