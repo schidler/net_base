@@ -114,90 +114,90 @@ int CEpollClient::RunFun()
 
         m_pAllUserStatus[iuserid].uEpollEvents = event.events;
         epoll_ctl(m_iEpollFd, EPOLL_CTL_ADD, event.data.fd, &event);
-  }
-  while(1)
-      {
-          struct epoll_event events[_MAX_SOCKFD_COUNT];
-          char buffer[1024];
-          memset(buffer,0,1024);
-          int nfds = epoll_wait(m_iEpollFd, events, _MAX_SOCKFD_COUNT, 100 );//等待epoll事件的产生
-          for (int ifd=0; ifd<nfds; ifd++)//处理所发生的所有事件
-          {
-              struct epoll_event event_nfds;
-              int iclientsockfd = events[ifd].data.fd;
-              cout << "events[ifd].data.fd: " << events[ifd].data.fd << endl;
-              int iuserid = m_iSockFd_UserId[iclientsockfd];//根据socketfd得到用户ID
-              if( events[ifd].events & EPOLLOUT )
-              {
-                  int iret = SendToServerData(iuserid);
-                  if( 0 < iret )
-                  {
-                      event_nfds.events = EPOLLIN|EPOLLERR|EPOLLHUP;
-                      event_nfds.data.fd = iclientsockfd;
-                      epoll_ctl(m_iEpollFd, EPOLL_CTL_MOD, event_nfds.data.fd, &event_nfds);
-                  }
-                  else
-                  {
-                      cout <<"[CEpollClient error:] EpollWait, SendToServerData fail, send iret:"<<iret<<",iuserid:"<<iuserid<<",fd:"<<events[ifd].data.fd<<endl;
-                      DelEpoll(events[ifd].data.fd);
-                      CloseUser(iuserid);
-                  }
-              }
-  else if( events[ifd].events & EPOLLIN )//监听到读事件，接收数据
-              {
-                  int ilen = RecvFromServer(iuserid, buffer, 1024);
-                  if(0 > ilen)
-                  {
-                      cout <<"[CEpollClient error]: RunFun, recv fail, reason is:"<<strerror(errno)<<",errno is:"<<errno<<endl;
-                      DelEpoll(events[ifd].data.fd);
-                      CloseUser(iuserid);
-                  }
-                  else if(0 == ilen)
-                  {
-                      cout <<"[CEpollClient warning:] server disconnect,ilen:"<<ilen<<",iuserid:"<<iuserid<<",fd:"<<events[ifd].data.fd<<endl;
-                      DelEpoll(events[ifd].data.fd);
-                      CloseUser(iuserid);
-                  }
-                  else
-                  {
-                      m_iSockFd_UserId[iclientsockfd] = iuserid;//将socketfd和用户ID关联起来
-                      event_nfds.data.fd = iclientsockfd;
-                      event_nfds.events = EPOLLOUT|EPOLLERR|EPOLLHUP;
-                      epoll_ctl(m_iEpollFd, EPOLL_CTL_MOD, event_nfds.data.fd, &event_nfds);
-                  }
-              }
-              else
-              {
-                  cout <<"[CEpollClient error:] other epoll error"<<endl;
-                  DelEpoll(events[ifd].data.fd);
-                  CloseUser(iuserid);
-              }
-          }
-  }
-  }
+    }
+    while(1)
+    {
+        struct epoll_event events[_MAX_SOCKFD_COUNT];
+        char buffer[1024];
+        memset(buffer,0,1024);
+        int nfds = epoll_wait(m_iEpollFd, events, _MAX_SOCKFD_COUNT, 100 );//等待epoll事件的产生
+        for (int ifd=0; ifd<nfds; ifd++)//处理所发生的所有事件
+        {
+            struct epoll_event event_nfds;
+            int iclientsockfd = events[ifd].data.fd;
+            cout << "events[ifd].data.fd: " << events[ifd].data.fd << endl;
+            int iuserid = m_iSockFd_UserId[iclientsockfd];//根据socketfd得到用户ID
+            if( events[ifd].events & EPOLLOUT )
+            {
+                int iret = SendToServerData(iuserid);
+                if( 0 < iret )
+                {
+                    event_nfds.events = EPOLLIN|EPOLLERR|EPOLLHUP;
+                    event_nfds.data.fd = iclientsockfd;
+                    epoll_ctl(m_iEpollFd, EPOLL_CTL_MOD, event_nfds.data.fd, &event_nfds);
+                }
+                else
+                {
+                    cout <<"[CEpollClient error:] EpollWait, SendToServerData fail, send iret:"<<iret<<",iuserid:"<<iuserid<<",fd:"<<events[ifd].data.fd<<endl;
+                    DelEpoll(events[ifd].data.fd);
+                    CloseUser(iuserid);
+                }
+            }
+            else if( events[ifd].events & EPOLLIN )//监听到读事件，接收数据
+            {
+                int ilen = RecvFromServer(iuserid, buffer, 1024);
+                if(0 > ilen)
+                {
+                    cout <<"[CEpollClient error]: RunFun, recv fail, reason is:"<<strerror(errno)<<",errno is:"<<errno<<endl;
+                    DelEpoll(events[ifd].data.fd);
+                    CloseUser(iuserid);
+                }
+                else if(0 == ilen)
+                {
+                    cout <<"[CEpollClient warning:] server disconnect,ilen:"<<ilen<<",iuserid:"<<iuserid<<",fd:"<<events[ifd].data.fd<<endl;
+                    DelEpoll(events[ifd].data.fd);
+                    CloseUser(iuserid);
+                }
+                else
+                {
+                    m_iSockFd_UserId[iclientsockfd] = iuserid;//将socketfd和用户ID关联起来
+                    event_nfds.data.fd = iclientsockfd;
+                    event_nfds.events = EPOLLOUT|EPOLLERR|EPOLLHUP;
+                    epoll_ctl(m_iEpollFd, EPOLL_CTL_MOD, event_nfds.data.fd, &event_nfds);
+                }
+            }
+            else
+            {
+                cout <<"[CEpollClient error:] other epoll error"<<endl;
+                DelEpoll(events[ifd].data.fd);
+                CloseUser(iuserid);
+            }
+        }
+    }
+}
   
-  bool CEpollClient::DelEpoll(int iSockFd)
-  {
-      bool bret = false;
-      struct epoll_event event_del;
-      if(0 < iSockFd)
-      {
-          event_del.data.fd = iSockFd;
-          event_del.events = 0;
-          if( 0 == epoll_ctl(m_iEpollFd, EPOLL_CTL_DEL, event_del.data.fd, &event_del) )
-          {
-              bret = true;
-          }
-          else
-          {
-              cout <<"[SimulateStb error:] DelEpoll,epoll_ctl error,iSockFd:"<<iSockFd<<endl;
-          }
-          m_iSockFd_UserId[iSockFd] = -1;
-      }
-      else
-      {
-          bret = true;
-  
-      }
-      return bret;
-  }
+bool CEpollClient::DelEpoll(int iSockFd)
+{
+    bool bret = false;
+    struct epoll_event event_del;
+    if(0 < iSockFd)
+    {
+        event_del.data.fd = iSockFd;
+        event_del.events = 0;
+        if( 0 == epoll_ctl(m_iEpollFd, EPOLL_CTL_DEL, event_del.data.fd, &event_del) )
+        {
+            bret = true;
+        }
+        else
+        {
+            cout <<"[SimulateStb error:] DelEpoll,epoll_ctl error,iSockFd:"<<iSockFd<<endl;
+        }
+        m_iSockFd_UserId[iSockFd] = -1;
+    }
+    else
+    {
+        bret = true;
+
+    }
+    return bret;
+}

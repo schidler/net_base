@@ -1,5 +1,4 @@
-﻿cepollserver.h
-#ifndef  C_EPOLL_SERVER_H
+﻿#ifndef  C_EPOLL_SERVER_H
 #define  C_EPOLL_SERVER_H
 
 #include <sys/epoll.h>
@@ -17,19 +16,18 @@
 class CEpollServer
 {
 public:
-        CEpollServer();
-        ~CEpollServer();
+    CEpollServer();
+    ~CEpollServer();
 
-        bool InitServer(const char* chIp, int iPort);
-        void Listen();
-        static void ListenThread( void* lpVoid );
-        void Run();
+    bool InitServer(const char* chIp, int iPort);
+    void Listen();
+    static void ListenThread( void* lpVoid );
+    void Run();
 
 private:
-        int m_iEpollFd;
-        int m_isock;
-        pthread_t m_ListenThreadId;// 监听线程句柄
-
+    int m_iEpollFd;
+    int m_isock;
+    pthread_t m_ListenThreadId;// 监听线程句柄
 };
 
 #endif
